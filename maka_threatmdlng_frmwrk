@@ -1,0 +1,117 @@
+Operational Security Framework Template designed to establish a baseline security posture for an organization or individual, it uses parts of NIST RMF, STRIDE, CVSS 
+(Below is a blank template followed by an example.) 
+
+
+(BLANK)
+# 🛡️ Maka Security Operational Security Framework Template (Blank)
+
+## 🛡️ 1. Governance & Policy
+
+| Control Area                   | Status (Yes/No/Partial) | Notes / Evidence                              | Improvement Needed (Y/N) |
+|-------------------------------|--------------------------|------------------------------------------------|---------------------------|
+| Security Policy in place       |                          |                                                |                           |
+| Acceptable Use Policy          |                          |                                                |                           |
+| Asset Inventory Maintained     |                          |                                                |                           |
+| Access Control Policies        |                          |                                                |                           |
+| Third-Party Risk Assessment    |                          |                                                |                           |
+
+---
+
+## 🛡️ 2. Technical Controls Assessment
+
+| System / Asset     | Control Domain     | Control Type       | Status | Notes                              | Improvement Needed |
+|--------------------|--------------------|--------------------|--------|-------------------------------------|---------------------|
+|                    |                    |                    |        |                                     |                     |
+|                    |                    |                    |        |                                     |                     |
+|                    |                    |                    |        |                                     |                     |
+
+---
+
+## 🛡️ 3. Unified Threat and Risk Modeling Table (STRIDE + CVSS + NIST RMF)
+
+| Component         | STRIDE Threat Type      | Threat/Vuln Description                           | CVSS Score | NIST Likelihood | NIST Impact | Risk Level | Existing Mitigations                      | Recommended Actions                          |
+|------------------|--------------------------|---------------------------------------------------|-------------|------------------|-------------|------------|--------------------------------------------|------------------------------------------------|
+|                  |                          |                                                   |             |                  |             |            |                                            |                                                |
+|                  |                          |                                                   |             |                  |             |            |                                            |                                                |
+
+---
+
+## 🛡️ 4. Incident Preparedness
+
+| Preparedness Area           | Status | Details / Notes                         | Improvement Needed |
+|-----------------------------|--------|------------------------------------------|---------------------|
+| Incident Response Plan       |        |                                          |                     |
+| Logging & Monitoring         |        |                                          |                     |
+| Detection Engineering        |        |                                          |                     |
+| Tabletop Exercises Conducted |        |                                          |                     |
+
+---
+
+## 🛡️ 5. Risk Summary and Remediation Plan
+
+| Risk Area        | Identified Gaps                 | Severity | Owner      | Remediation Plan                    | Target Date |
+|------------------|----------------------------------|----------|------------|-------------------------------------|-------------|
+|                  |                                  |          |            |                                     |             |
+|                  |                                  |          |            |                                     |             |
+
+
+
+
+(EXAMPLE)
+# 🛡️ Maka Security Operational Security Framework Template (Filled Example)
+
+## 🛡️ 1. Governance & Policy
+
+| Control Area                   | Status       | Notes / Evidence                                         | Improvement Needed |
+|-------------------------------|--------------|-----------------------------------------------------------|--------------------|
+| Security Policy in place       | Yes          | Reviewed annually; updated January 2025                   | No                 |
+| Acceptable Use Policy          | Yes          | Enforced via onboarding process                           | No                 |
+| Asset Inventory Maintained     | Partial      | Maintained manually in Excel                              | Yes                |
+| Access Control Policies        | Partial      | Some RBAC in place, but lacks formal documentation         | Yes                |
+| Third-Party Risk Assessment    | No           | No formal assessment of SaaS vendors                       | Yes                |
+
+---
+
+## 🛡️ 2. Technical Controls Assessment
+
+| System / Asset     | Control Domain     | Control Type       | Status   | Notes                                          | Improvement Needed |
+|--------------------|--------------------|--------------------|----------|------------------------------------------------|---------------------|
+| Workstations       | Endpoint Protection | EDR (SentinelOne)  | Enabled  | Active on 90% of endpoints                     | Yes                |
+| AWS Infrastructure | IAM                 | MFA, IAM Roles     | Partial  | MFA enforced; over-privileged service roles     | Yes                |
+| Linux Servers      | Patching            | Manual Updates     | Partial  | Critical patches missing on legacy systems      | Yes                |
+| Perimeter Firewall | Network Filtering   | Geo/IP/Port Rules  | Enabled  | UFW and AWS SGs in place                        | No                 |
+
+---
+
+## 🛡️ 3. Unified Threat and Risk Modeling Table (STRIDE + CVSS + NIST RMF)
+
+| Component     | STRIDE Threat Type | Threat/Vuln Description                      | CVSS Score | NIST Likelihood | NIST Impact | Risk Level | Existing Mitigations                | Recommended Actions                                  |
+|--------------|---------------------|----------------------------------------------|------------|------------------|-------------|------------|--------------------------------------|------------------------------------------------------|
+| Web Portal   | Tampering           | File upload vulnerability in image parser    | 7.2        | Moderate         | High        | High       | WAF, AV scanning                    | Add content-type enforcement and input validation    |
+| Database     | Info Disclosure     | PII exposed via SQLi in user endpoint        | 9.1        | High             | Very High   | Very High  | Limited IP access, alerts in SIEM   | Parameterized queries, fix vuln, monitor exfiltration |
+| Email Server | Spoofing            | Lack of SPF/DKIM/DMARC enables spoof attacks | —          | High             | Moderate    | High       | None                                 | Implement SPF, DKIM, DMARC                          |
+| IAM System   | Elevation of Priv   | Over-permissioned IAM role in production     | 6.4        | Moderate         | High        | High       | MFA enforced                        | Implement least privilege, review IAM policies       |
+| Logs (SIEM)  | Repudiation         | Some systems not forwarding to SIEM          | —          | Low              | Moderate    | Moderate   | Basic logging present               | Centralize logs via agent deployment                 |
+
+---
+
+## 🛡️ 4. Incident Preparedness
+
+| Preparedness Area           | Status     | Details / Notes                                   | Improvement Needed |
+|-----------------------------|------------|---------------------------------------------------|---------------------|
+| Incident Response Plan       | Partial    | Exists in PDF; not tested in last 12 months       | Yes                 |
+| Logging & Monitoring         | Partial    | SIEM deployed; gaps in workstation coverage       | Yes                 |
+| Detection Engineering        | No         | No formal detection rules tied to ATT&CK          | Yes                 |
+| Tabletop Exercises Conducted | No         | None conducted                                    | Yes                 |
+
+---
+
+## 🛡️ 5. Risk Summary and Remediation Plan
+
+| Risk Area        | Identified Gaps                 | Severity | Owner         | Remediation Plan                            | Target Date |
+|------------------|----------------------------------|----------|---------------|---------------------------------------------|-------------|
+| Email Security   | No spoofing protection           | High     | IT/Sec Team   | Implement SPF/DKIM/DMARC                    | 2025-07-15  |
+| SQL Injection    | User API vulnerable              | Critical | AppSec Lead   | Patch endpoint, validate input              | 2025-07-01  |
+| IAM Overpriv     | Excessive production privileges  | High     | CloudOps      | Review roles and apply least privilege      | 2025-07-05  |
+| Incident Resp    | No recent tabletop tests         | Medium   | Security Lead | Schedule tabletop, review IR plan           | 2025-07-20  |
+
