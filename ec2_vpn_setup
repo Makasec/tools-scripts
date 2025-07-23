@@ -1,0 +1,92 @@
+WireGuard VPN Setup: Ubuntu EC2 Server <-> Windows Client
+==================================================================
+
+Key Generation (Both Sides)
+---------------------------
+
+1. Generate keys on the EC2 server:
+   sudo wg genkey | sudo tee /etc/wireguard/server_private.key | sudo wg pubkey > /etc/wireguard/server_public.key
+
+2. Generate keys on the Windows client:
+   - Install the WireGuard application (see step 9 below).
+   - Use the WireGuard GUI to create a new tunnel.
+   - This auto-generates the client's private and public key.
+   - Copy the client's public key to use in the server config.
+   - Copy the server's public key into the client config.
+
+EC2 Server (Ubuntu) Setup
+-------------------------
+
+3. Install WireGuard:
+   sudo apt update && sudo apt install wireguard -y
+
+4. Enable IP forwarding:
+   echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+   sudo sysctl -p
+
+5. Create WireGuard config:
+   sudo nano /etc/wireguard/wg0.conf
+
+   Contents:
+   [Interface]
+   PrivateKey = <server_private_key>
+   Address = 10.200.200.1/24
+   ListenPort = 51820
+
+   [Peer]
+   PublicKey = <client_public_key>
+   AllowedIPs = 10.200.200.2/32
+
+6. Set up NAT (replace eth0 if needed):
+   sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+7. Start and enable WireGuard:
+   sudo wg-quick up wg0
+   sudo systemctl enable wg-quick@wg0
+
+8. Security group rules:
+   - Inbound: UDP 51820 from 0.0.0.0/0
+   - Outbound: Allow all
+
+Windows Client Setup
+--------------------
+
+9. Install WireGuard for Windows:
+   - Download and install from: https://www.wireguard.com/install/
+
+10. Create a new tunnel in the WireGuard GUI:
+    - This generates the private and public keys automatically.
+    - Copy the public key into the EC2 server config (`wg0.conf`).
+    - Paste the server’s public key into the client config below.
+
+11. Configure the tunnel:
+    [Interface]
+    PrivateKey = <client_private_key>
+    Address = 10.200.200.2/24
+    DNS = 1.1.1.1
+
+    [Peer]
+    PublicKey = <server_public_key>
+    Endpoint = <EC2_Public_IP>:51820
+    AllowedIPs = 0.0.0.0/0
+    PersistentKeepalive = 25
+
+12. Activate tunnel in the GUI.
+
+13. Visit https://whatismyipaddress.com — should show EC2 IP.
+
+Verification
+------------
+
+- On EC2:
+  sudo wg show wg0
+
+- Use tcpdump to debug:
+  sudo tcpdump -ni any udp port 51820
+
+Notes
+-----
+- Generate and exchange all keys at the start.
+- Use correct keys (public/private).
+- Server must allow UDP 51820.
+- Client only needs outbound access.
