@@ -1,0 +1,91 @@
+SSH User Setup & Troubleshooting Guide
+
+This guide walks you through creating a new user, enabling SSH key login, disabling root/password login, and troubleshooting issues. Replace <new user> with your desired username.
+
+Steps
+1. Create the user and group
+sudo useradd -m -s /bin/bash <new user>
+getent group <new user> || sudo groupadd <new user>
+sudo usermod -g <new user> <new user>
+
+2. Set up the .ssh directory
+sudo mkdir -p /home/<new user>/.ssh
+sudo chown <new user>:<new user> /home/<new user> /home/<new user>/.ssh
+sudo chmod 700 /home/<new user>
+sudo chmod 700 /home/<new user>/.ssh
+
+3. Copy the public key into place
+sudo install -m 600 -o <new user> -g <new user> /home/ec2-user/.ssh/authorized_keys /home/<new user>/.ssh/authorized_keys
+
+4. Verify permissions
+ls -ld /home/<new user> /home/<new user>/.ssh
+ls -l /home/<new user>/.ssh/authorized_keys
+
+
+Expected results:
+
+/home/<new user> → drwx------ <new user> <new user>
+
+/home/<new user>/.ssh → drwx------ <new user> <new user>
+
+/home/<new user>/.ssh/authorized_keys → -rw------- <new user> <new user>
+
+5. Update sshd_config
+sudo nano /etc/ssh/sshd_config
+
+
+Ensure these lines are set:
+
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+
+If restricting access:
+
+AllowUsers <new user>
+
+
+Restart SSH after changes:
+
+sudo systemctl restart sshd
+
+6. Test login with verbose output
+
+On the client (Windows example):
+
+ssh -vv -i "C:\Users\me\Downloads\KEY.pem" <new user>@<IP>
+
+
+On the server (watch logs in another session):
+
+sudo journalctl -u sshd -f
+
+7. Confirm key fingerprints match
+
+Client side:
+
+ssh-keygen -lf "C:\Users\me\Downloads\KEY.pem"
+
+
+Server side:
+
+ssh-keygen -lf /home/<new user>/.ssh/authorized_keys
+
+
+If they don’t match, paste the correct public key into /home/<new user>/.ssh/authorized_keys.
+
+8. Troubleshooting checklist
+
+ Wrong or missing key → confirm fingerprints match.
+
+ Bad permissions → make sure home dir, .ssh, and authorized_keys have strict ownership/permissions.
+
+ User blocked → check AllowUsers in sshd_config.
+
+ Root login should remain disabled (PermitRootLogin no).
+
+ Password login should remain disabled once key auth works.
+
+ Follow these steps in sequence and you will solve 99% of SSH login issues for a new user.
